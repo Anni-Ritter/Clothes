@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Clothsio</string>
+    <string name="date">17 мая</string>
+    <string name="weekday">вт</string>
+    <string name="city"><u>Где вы?</u></string>
+    <string name="temperature">Градусы</string>
+
+
+    <string name="open_weather_maps_app_id">26d3d600d0ffd03de8d1f2f068fc2df3</string>
+    <string name="appName">Clothsio</string>
+    <string name="info">У вас ещё нет одежды. \nПопробуйте добавить её в гардеробе :)</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="infoCamera">Для лучшего распознавания положите одежду на однотонный фон</string>
+
+</resources>

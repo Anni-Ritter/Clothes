@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="Главная"
+        android:id="@+id/fragment_main"
+        android:icon="@drawable/home1"
+        />
+    <item
+        android:title="Одежда"
+        android:id="@+id/fragment_clothes_list"
+        android:icon="@drawable/clothe1"/>
+</menu>
