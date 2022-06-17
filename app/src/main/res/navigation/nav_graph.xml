@@ -3,36 +3,65 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/fragment_main">
+    app:startDestination="@id/startFragment">
 
     <fragment
         android:id="@+id/fragment_main"
         android:name="com.example.diploma.main.ControllerLayout.MainFragment"
-        android:label="fragment_main"
+        android:label="MainFragment"
         tools:layout="@layout/fragment_main" >
         <action
-            android:id="@+id/action_fragment_main_to_fragment_clothes_list"
-            app:destination="@id/fragment_clothes_list" />
+            android:id="@+id/action_fragment_main_to_fragment_clothes"
+            app:destination="@id/fragment_clothes" />
     </fragment>
     <fragment
-        android:id="@+id/fragment_clothes_list"
-        android:name="com.example.diploma.main.ControllerLayout.ClothesFragment"
-        android:label="fragment_clothes_list"
-        tools:layout="@layout/fragment_clothes_list" >
+        android:id="@+id/fragment_clothes"
+        android:name="com.example.diploma.main.ControllerLayout.Clothes.ClothesFragment"
+        android:label="ClothesFragment"
+        tools:layout="@layout/fragment_clothes" >
         <action
-            android:id="@+id/action_fragment_clothes_list_to_cameraFragment"
+            android:id="@+id/action_fragment_clothes_to_cameraFragment"
             app:destination="@id/cameraFragment" />
         <action
-            android:id="@+id/action_fragment_clothes_list_to_fragment_main"
+            android:id="@+id/action_fragment_clothes_to_fragment_main"
             app:destination="@id/fragment_main" />
+        <action
+            android:id="@+id/action_fragment_clothes_to_classificationClothesFragment"
+            app:destination="@id/classificationClothesFragment" />
     </fragment>
     <fragment
         android:id="@+id/cameraFragment"
         android:name="com.example.diploma.main.ControllerLayout.CameraFragment"
-        android:label="fragment_camera"
+        android:label="CameraFragment"
         tools:layout="@layout/fragment_camera" >
         <action
-            android:id="@+id/action_cameraFragment_to_fragment_clothes_list"
-            app:destination="@id/fragment_clothes_list" />
+            android:id="@+id/action_cameraFragment_to_fragment_clothes"
+            app:destination="@id/fragment_clothes" />
+        <action
+            android:id="@+id/action_cameraFragment_to_classificationClothesFragment"
+            app:destination="@id/classificationClothesFragment" />
+        <argument
+            android:name="state"
+            app:argType="string"
+            app:nullable="true"
+            android:defaultValue="null" />
+    </fragment>
+    <fragment
+        android:id="@+id/startFragment"
+        android:name="com.example.diploma.main.ControllerLayout.StartAppFragment"
+        android:label="StartFragment"
+        tools:layout="@layout/start_app">
+        <action
+            android:id="@+id/action_startFragment_to_fragment_main"
+            app:destination="@id/fragment_main" />
+    </fragment>
+    <fragment
+        android:id="@+id/classificationClothesFragment"
+        android:name="com.example.diploma.main.ControllerLayout.ClassificationClothesFragment"
+        android:label="fragment_classification_clothes"
+        tools:layout="@layout/fragment_classification_clothes" >
+        <action
+            android:id="@+id/action_classificationClothesFragment_to_fragment_clothes"
+            app:destination="@id/fragment_clothes" />
     </fragment>
 </navigation>

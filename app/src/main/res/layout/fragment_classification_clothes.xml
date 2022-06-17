@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"    android:layout_width="match_parent" android:layout_height="match_parent"    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".main.ControllerLayout.ClassificationClothesFragment">\
+        <ImageView
+            android:id="@+id/imageView5"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_centerInParent="true"
+            app:srcCompat="@drawable/tshirt" />
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_marginTop="20dp"
+            android:text="@string/progress"
+            android:layout_below="@+id/imageView5"
+            android:fontFamily="@font/flow"
+            android:textSize="18sp"
+            android:textColor="@color/blue_dark"/>
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dip"
+            android:indeterminateDrawable="@drawable/spinner_ring"
+            android:indeterminateOnly="true"
+            android:layout_below="@+id/textView3"
+            android:layout_centerInParent="true"/>
+</RelativeLayout>

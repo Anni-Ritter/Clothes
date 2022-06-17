@@ -1,5 +1,7 @@
 package com.example.diploma.main.Retrofit;
 
+import androidx.annotation.NonNull;
+
 import com.example.diploma.main.Weather.WeatherDay;
 
 import retrofit2.Call;
@@ -9,13 +11,13 @@ import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public class APIService {
-    public static String KEY = "26d3d600d0ffd03de8d1f2f068fc2df3";
     public static final String BASE_URL = "https://api.openweathermap.org/data/2.5/";
     private static Retrofit retrofit = null;
 
     public interface ApiInterface {
         @GET("weather")
         Call<WeatherDay> getToday(
+                @NonNull
                 @Query("lat") Double lat,
                 @Query("lon") Double lon,
                 @Query("units") String units,

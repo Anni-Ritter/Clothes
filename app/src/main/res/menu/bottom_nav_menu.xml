@@ -4,10 +4,10 @@
     <item
         android:title="Главная"
         android:id="@+id/fragment_main"
-        android:icon="@drawable/home1"
+        android:icon="@drawable/selector_home"
         />
     <item
         android:title="Одежда"
-        android:id="@+id/fragment_clothes_list"
-        android:icon="@drawable/clothe1"/>
+        android:id="@+id/fragment_clothes"
+        android:icon="@drawable/selector_clothes"/>
 </menu>

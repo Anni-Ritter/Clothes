@@ -1,9 +1,6 @@
 package com.example.diploma.main.Weather;
 
 import com.google.gson.annotations.SerializedName;
-
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class WeatherDay {
@@ -15,36 +12,27 @@ public class WeatherDay {
         String icon;
     }
 
-
     @SerializedName("main")
     private final WeatherTemp temp;
 
     @SerializedName("weather")
-    private final List<WeatherDescription> desctiption;
+    private final List<WeatherDescription> description;
 
     @SerializedName("name")
     private String city;
 
-    @SerializedName("dt")
-    private long time;
-
-
-    public WeatherDay(WeatherTemp temp, List<WeatherDescription> desctiption) {
+    public WeatherDay(WeatherTemp temp, List<WeatherDescription> description) {
         this.temp = temp;
-        this.desctiption = desctiption;
-    }
-
-    public long getDate(){
-        return time;
+        this.description = description;
     }
 
     public String getTempWithDegree() { return String.valueOf(temp.temp.intValue()) + "\u00B0"; }
 
     public String getCity() { return city; }
 
-    public String getIcon() { return desctiption.get(0).icon; }
+    public String getIcon() { return description.get(0).icon; }
 
     public String getIconUrl() {
-        return "https://openweathermap.org/img/w/" + desctiption.get(0).icon + ".png";
+        return "https://openweathermap.org/img/w/" + description.get(0).icon + ".png";
     }
 }

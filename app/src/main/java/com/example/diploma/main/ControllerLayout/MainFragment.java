@@ -1,10 +1,11 @@
 package com.example.diploma.main.ControllerLayout;
 
 
+import static com.example.diploma.databinding.FragmentMainBinding.inflate;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -14,10 +15,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
@@ -26,7 +28,6 @@ import com.example.diploma.R;
 import com.example.diploma.databinding.FragmentMainBinding;
 import com.example.diploma.main.Retrofit.APIService;
 import com.example.diploma.main.Weather.WeatherDay;
-import com.tbruyelle.rxpermissions3.RxPermissions;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -40,51 +41,22 @@ import retrofit2.Response;
 
 public class MainFragment extends Fragment {
 
-    TextView myAddress;
-    TextView date;
-    TextView weekday;
-    TextView temperature;
-    ImageView weatherImg;
     String TAG = "WEATHER";
     private LocationManager locationManager;
     APIService.ApiInterface api;
     private FragmentMainBinding binding;
-    private SharedPreferences sPref;
-    final String WEATHER_TEXT = "saved_text";
-    final String CITY_TEXT = "saved_text";
-    final String WEEKDAY_TEXT = "saved_text";
-    final String IMAGE_URL = "saved_text";
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-
-    }
+    private ActivityResultLauncher<String[]> permissionLauncher;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentMainBinding.inflate(inflater, container, false);
-        View rootView = binding.getRoot();
-        date = rootView.findViewById(R.id.dateTextView);
-        weekday = rootView.findViewById(R.id.weekdayTextView);
-        myAddress = rootView.findViewById(R.id.address);
-        temperature = rootView.findViewById(R.id.tepmeratuteTextView);
-        weatherImg = rootView.findViewById(R.id.weatherImageView);
+        binding = inflate(inflater, container, false);
+        return binding.getRoot();
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         api = APIService.getClient().create(APIService.ApiInterface.class);
-
-
-        final RxPermissions rxPermissions = new RxPermissions(this);
-        rxPermissions
-                .request(Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION)
-                .subscribe(granted -> {
-                    if (granted) {
-                        locationManager = (LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE);
-                    }
-                });
-
         // Текущее время
         Date currentDate = new Date();
         DateFormat dateFormat = new SimpleDateFormat("dd MMM", Locale.forLanguageTag("ru"));
@@ -93,20 +65,29 @@ public class MainFragment extends Fragment {
         DateFormat weekdayFormat = new SimpleDateFormat("EEE", Locale.forLanguageTag("ru"));
         String weekdayText = weekdayFormat.format(currentDate);
 
-        date.setText(dateText);
-        weekday.setText(weekdayText);
-        return rootView;
+        binding.dateTextView.setText(dateText);
+        binding.weekdayTextView.setText(weekdayText);
+        permissionLauncher = registerForActivityResult(new ActivityResultContracts.RequestMultiplePermissions(), result -> {
+            if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            }
+            else {
+                ActivityCompat.requestPermissions(
+                        requireActivity(),
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                        102);
+            }
+        });
     }
 
     @Override
     public void onResume() {
         super.onResume();
         if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        else{
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    1000 * 10, 10, locationListener);
+            permissionLauncher.launch(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
+        } else {
+            locationManager = (LocationManager) requireActivity().getSystemService(Context.LOCATION_SERVICE);
             locationManager.requestLocationUpdates(
                     LocationManager.NETWORK_PROVIDER, 1000 * 10, 10,
                     locationListener);
@@ -115,8 +96,8 @@ public class MainFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         binding = null;
+        super.onDestroyView();
     }
 
     @Override
@@ -145,7 +126,7 @@ public class MainFragment extends Fragment {
         Double lng = location.getLongitude();
         String units = "metric";
         String lang = "ru";
-        String key = APIService.KEY;
+        String key = requireActivity().getString(R.string.API_KEY);
 
         Log.d(TAG, "OK");
         Call<WeatherDay> callToday = api.getToday(lat, lng, units, lang, key);
@@ -158,12 +139,12 @@ public class MainFragment extends Fragment {
                 //Log.d(TAG,response.toString());
                 if (response.isSuccessful()) {
                     if (data != null) {
-                        temperature.setText(data.getTempWithDegree() + "C");
-                        myAddress.setText(data.getCity());
+                        binding.tepmeratuteTextView.setText(data.getTempWithDegree() + "C");
+                        binding.address.setText(data.getCity());
                         Glide.with(MainFragment.this)
                                 .load(data.getIconUrl())
                                 .error(R.drawable.weather)
-                                .into(weatherImg);
+                                .into(binding.weatherImageView);
                     }
                 }
 

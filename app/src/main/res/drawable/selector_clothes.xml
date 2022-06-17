@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--  это при нажатом состоянии  -->
+    <item android:drawable="@drawable/clothes_activity"
+        android:state_checked="true" />
+    <!--  это значение по умолчанию + должно быть последним -->
+    <item android:drawable="@drawable/clothes"/>
+</selector>

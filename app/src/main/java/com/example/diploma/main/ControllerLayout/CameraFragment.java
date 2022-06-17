@@ -1,46 +1,35 @@
 package com.example.diploma.main.ControllerLayout;
-
-import android.Manifest;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
-import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
-import androidx.camera.core.CameraX;
-import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageCapture;
+import androidx.camera.core.ImageCaptureException;
 import androidx.camera.core.Preview;
-import androidx.camera.core.impl.ImageCaptureConfig;
-import androidx.camera.core.impl.PreviewConfig;
 import androidx.camera.lifecycle.ProcessCameraProvider;
-import androidx.camera.view.PreviewView;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-
+import android.widget.Toast;
 import com.example.diploma.R;
 import com.example.diploma.databinding.FragmentCameraBinding;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.common.util.concurrent.ListenableFuture;
-
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class CameraFragment extends Fragment {
 
     private FragmentCameraBinding binding;
-    private ImageView arrowButton;
-    private PreviewView previewView;
+    private ImageCapture imageCapture;
+    private ExecutorService imageCaptureExecutor;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
-    private FloatingActionButton cameraButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,21 +40,20 @@ public class CameraFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentCameraBinding.inflate(inflater, container, false);
+        imageCaptureExecutor = Executors.newSingleThreadExecutor();
         View rootView = binding.getRoot();
-        arrowButton = rootView.findViewById(R.id.arrowButton);
-        previewView = rootView.findViewById(R.id.previewView);
-        cameraButton = rootView.findViewById(R.id.cameraButton);
-        arrowButton.setOnClickListener(new View.OnClickListener() {
+        startCamera();
+        binding.arrowButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(v).navigate(R.id.action_cameraFragment_to_fragment_clothes_list);
+                Navigation.findNavController(v).navigate(R.id.action_cameraFragment_to_fragment_clothes);
             }
         });
-        startCamera();
-        cameraButton.setOnClickListener(new View.OnClickListener() {
+
+        binding.cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Navigation.findNavController(v).navigate(R.id.action_cameraFragment_to_fragment_clothes_list);
+                Navigation.findNavController(v).navigate(R.id.action_cameraFragment_to_classificationClothesFragment);
             }
 
         });
@@ -74,9 +62,9 @@ public class CameraFragment extends Fragment {
     }
     private void bindImageAnalysis(@NonNull ProcessCameraProvider cameraProvider) {
         Preview preview = new Preview.Builder().build();
+        preview.setSurfaceProvider(binding.previewView.createSurfaceProvider());
         CameraSelector cameraSelector = new CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
-        preview.setSurfaceProvider(previewView.createSurfaceProvider());
         cameraProvider.bindToLifecycle((LifecycleOwner)this, cameraSelector, preview);
     }
 
@@ -87,6 +75,11 @@ public class CameraFragment extends Fragment {
             public void run() {
                 try {
                     ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
+                    imageCapture = new ImageCapture.Builder()
+                            .setCaptureMode(ImageCapture.CAPTURE_MODE_MINIMIZE_LATENCY)
+                            .setTargetRotation(requireActivity().getWindowManager().getDefaultDisplay().getRotation())
+                            .build();
+                    cameraProvider.unbindAll();
                     bindImageAnalysis(cameraProvider);
                 } catch (ExecutionException | InterruptedException e) {
                     e.printStackTrace();
@@ -95,6 +88,23 @@ public class CameraFragment extends Fragment {
         }, ContextCompat.getMainExecutor(requireContext()));
     }
 
+    private void takePhoto() throws IOException {
+        String name = "clothes.jpg";
+        File file = new File(requireActivity().getFilesDir(), name);
+        ImageCapture.OutputFileOptions options = new ImageCapture.OutputFileOptions.Builder(file).build();
+        imageCapture.takePicture(options, imageCaptureExecutor, new ImageCapture.OnImageSavedCallback() {
+            @Override
+            public void onImageSaved(@NonNull ImageCapture.OutputFileResults outputFileResults) {
+
+                    requireActivity().runOnUiThread(() -> NavHostFragment.findNavController(CameraFragment.this).navigate(R.id.action_cameraFragment_to_fragment_clothes));
+            }
+
+            @Override
+            public void onError(@NonNull ImageCaptureException exception) {
+                Toast.makeText(requireContext(), exception.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();

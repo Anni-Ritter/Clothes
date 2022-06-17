@@ -2,19 +2,12 @@ package com.example.diploma.main.ControllerLayout;
 
 import com.example.diploma.R;
 import com.example.diploma.databinding.ActivityMainBinding;
-
-import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
-import android.widget.TextView;
-
-import androidx.appcompat.widget.Toolbar;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.NavigationUI;
+import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -26,16 +19,9 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.fragment_main, R.id.fragment_clothes_list)
-                .build();
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavController navController = ((NavHostFragment) (Objects.requireNonNull(getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment)))).getNavController();
+        binding.bottomNav.setItemIconTintList(null);
         NavigationUI.setupWithNavController(binding.bottomNav, navController);
-
     }
 
-    @Override
-    public boolean onSupportNavigateUp() {
-        return Navigation.findNavController(this, R.id.nav_host_fragment).navigateUp();
-    }
 }

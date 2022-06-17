@@ -1,11 +1,12 @@
 package com.example.diploma.main.Clothes;
 
 public abstract class Clothes {
+    abstract public Type getType();
+}
 
-    private enum Type{
-        TOP,
-        BOTTOM,
-        DRESSEDUP,
-        SHOES
-    }
+enum Type{
+    TOP,
+    BOTTOM,
+    DRESSEDUP,
+    SHOES
 }
